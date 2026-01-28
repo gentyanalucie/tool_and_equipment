@@ -1,0 +1,270 @@
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #f2f4f8;
+        padding: 20px;
+    }
+
+    .quiz-box {
+        max-width: 600px;
+        margin: auto;
+        background: #fff;
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .progress {
+        font-size: 14px;
+        color: #555;
+        margin-bottom: 10px;
+    }
+
+    .question {
+        font-weight: bold;
+        margin-bottom: 15px;
+    }
+
+    .option {
+        display: block;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        margin-bottom: 8px;
+        cursor: pointer;
+    }
+
+    .option:hover {
+        background: #eef3ff;
+    }
+
+    .option.correct {
+        background: #d1fae5;
+        border-color: #10b981;
+    }
+
+    .option.wrong {
+        background: #fee2e2;
+        border-color: #ef4444;
+    }
+
+    button {
+        margin-top: 15px;
+        padding: 10px 15px;
+        background: #2563eb;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+
+    button:disabled {
+        background: #9ca3af;
+        cursor: not-allowed;
+    }
+
+    .score {
+        text-align: center;
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    .status {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 12px;
+    color: #374151;
+}
+
+.option.correct {
+    background: #dcfce7;
+    border-color: #22c55e;
+    color: inherit;
+}
+
+.option.wrong {
+    background: #fee2e2;
+    border-color: #ef4444;
+    color: inherit;
+}
+
+.option.selected {
+    background: #e0e7ff;
+    border-color: #2563eb;
+}
+
+
+
+</style>
+</head>
+
+<div class="quiz-box">
+
+    <!-- TOP STATUS -->
+    <div class="status">
+        <span id="progress"></span>
+        <span id="score"></span>
+    </div>
+
+    <div class="question" id="question"></div>
+    <div id="options"></div>
+
+    <button id="nextBtn" onclick="nextQuestion()" disabled>Next</button>
+
+</div>
+
+
+<script>
+    const rawQA = `1|Mindset yang harus dimiliki setiap teknisi adalah?|Kerja cepat tanpa prosedur|Kerja asal selesai|Kerja benar, rapi, dan cepat|Kerja mengikuti kebiasaan|c|
+2|Apa yang harus diperhatikan ketika akan membuka casing penutup handphone?|Harga handphone|Warna casing|Arsitektur dan peletakan komponen handphone|Merek handphone|c|
+3|Kriteria obeng yang baik untuk servis handphone adalah?|Berukuran besar|Tidak bermagnet|Memiliki magnet dan ukuran yang sesuai|Berbahan plastik|c|
+4|Apa yang tidak boleh dilakukan saat menggunakan obeng?|Membersihkan obeng sebelum digunakan|Menggunakan obeng bermagnet|Menggunakan ukuran kepala obeng yang tidak sesuai dengan baut|Menyimpan obeng setelah dipakai|c|
+5|Salah satu hal yang dapat merusak rangkaian elektronik pada PCB adalah?|Udara panas|Kotoran seperti debu logam dan jamur|Cahaya lampu|Plastik casing|b|
+6|Mengapa kotoran yang menempel di PCB dapat menyebabkan kerusakan?|Mengurangi tegangan|Menambah daya|Menyebabkan short circuit secara tidak sengaja|Mempercepat arus|c|
+7|Cairan yang umum digunakan sebagai pembersih PCB adalah?|Air mineral|Bensin|Isopropyl Alcohol (IPA)|Minyak goreng|c|
+8|Cairan alternatif selain IPA yang umum digunakan untuk membersihkan PCB adalah?|Air sabun|Thinner|Oli|Spiritus|b|
+9|Apa fungsi pengukuran dalam servis handphone?|Menambah kecepatan kerja|Memastikan letak kerusakan secara tepat agar tidak salah vonis|Mengganti komponen lebih cepat|Menentukan harga servis|b|
+10|Instrumen pengukuran yang umum digunakan dalam servis handphone adalah?|Power supply|Oscilloscope|Multimeter|Solder|c|
+11|Salah satu jenis multimeter adalah?|Digital tester|Clamp meter|Analog multimeter|Logic analyzer|c|
+12|Ciri multimeter yang baik adalah?|Tampilan besar|Harga mahal|Nilai pengukuran memiliki akurasi tinggi|Warna menarik|c|
+13|Mode pengukuran yang sering digunakan pada servis handphone adalah?|Mode AC|Mode resistor|Mode dioda (pasif)|Mode frekuensi|c|
+14|Apa yang menyebabkan hasil pengukuran mode dioda bisa berbeda dengan schematic?|Kesalahan teknisi|Jenis multimeter yang berbeda|Tegangan baterai|Ukuran probe|b|
+15|Peralatan elektronik membutuhkan apa agar dapat bekerja?|Sinyal|Panas|Daya listrik|Tekanan|c|
+16|pada servis handphone, variabel yang harus disesuaikan saat menghubungkan peralatan ke catu daya (PSU) adalah?|Arus|Resistansi|Tegangan|Frekuensi|c|
+17|Yang termasuk sumber listrik adalah?|Adaptor|Resistor|Aki|Kapasitor|c|
+18|Kelebihan power supply dibanding baterai adalah?|Lebih kecil|Lebih ringan|Output dapat divariasikan sesuai kebutuhan|Lebih murah|c|
+19|Besar tegangan baterai yang dibutuhkan untuk menghidupkan handphone adalah?|3V|4V|5V|12V|b|
+20|Besar tegangan dari USB adalah?|3V|4V|5V|9V|c|
+21|Rumus daya listrik P = V × I memiliki arti?|Daya selalu tetap|Daya hanya tergantung arus|Besarnya daya tergantung tegangan dan arus|Tegangan sama dengan arus|c|
+22|Jika charger 10 Watt dengan tegangan 5V, besar arus yang mengalir adalah?|1A|1,5A|2A|3A|c|
+23|Perbedaan power supply 3A dan 5A adalah?|Ukuran fisik|Harga|Kapasitas arus yang dapat disuplai|Tegangan output|c|
+24|Mana yang lebih baik, PSU dengan 4 digit atau 3 digit?|3 digit karena sederhana|4 digit karena lebih akurat|Sama saja|Tergantung merek|b|
+25|Apa yang dimaksud dengan fitur CC pada power supply?|Constant Charge|Current Control|Constant Current|Circuit Control|c|
+26|Apa yang dimaksud dengan fitur CV pada power supply?|Current Voltage|Constant Value|Constant Voltage|Control Voltage|c|
+27|Apa yang dimaksud dengan fitur OCP pada power supply?|Over Charge Protection|Over Current Protection|Output Control Protection|Operational Current Protection|b|
+28|Apa kepanjangan dari SMD?|Surface Module Device|System Mount Device|Surface Mount Device|Small Mount Device|c|
+29|Apa yang dimaksud dengan komponen SMD?|Komponen berkaki panjang|Komponen besar|Komponen yang dipasang di permukaan PCB|Komponen dalam casing|c|
+30|Apa yang dimaksud dengan ragum?|Alat pemotong|Alat pemanas|Alat untuk menjepit komponen|Alat ukur|c|
+31|Logika penggunaan pinset yang benar adalah?|Gunakan satu pinset untuk semua|Gunakan pinset besar saja|Gunakan pinset sesuai ukuran dan letak komponen|Gunakan tangan langsung|c|
+32|Pembagian mikroskop berdasarkan jumlah lensa adalah?|Analog dan digital|Manual dan otomatis|Monokular, binokular, dan trinokular|Optik dan mekanik|c|
+33|Pembagian mikroskop berdasarkan output dan cara memproses cahaya adalah?|Monokular dan binokular|Analog dan digital|Optik dan mekanik|Manual dan otomatis|b|
+34|Apa yang dimaksud dengan mikroskop trinokular?|Memiliki 2 lensa|Memiliki 3 lensa|Memiliki 3 kaki|Memiliki 3 tingkat pembesaran|b|
+`
+function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+}
+
+function parseQuiz(text) {
+    return text.trim().split("\n").map(line => {
+        const [, question, a, b, c, d, key] = line.split("|");
+        const choices = [a, b, c, d];
+        return {
+            question,
+            choices,
+            correct: choices[{ a: 0, b: 1, c: 2, d: 3 }[key]]
+        };
+    });
+}
+
+// ---------- INIT ----------
+let quiz = parseQuiz(rawQA);
+shuffle(quiz);
+quiz.forEach(q => shuffle(q.choices));
+
+let current = 0;
+let score = 0;
+let selectedAnswer = null;
+let locked = false;
+
+// ---------- RENDER ----------
+function renderQuestion() {
+    selectedAnswer = null;
+    locked = false;
+
+    document.getElementById("nextBtn").disabled = true;
+
+    const q = quiz[current];
+
+    document.getElementById("progress").innerText =
+        `Question ${current + 1} of ${quiz.length}`;
+
+    document.getElementById("score").innerText =
+        `Right ${score} of ${quiz.length}`;
+
+    document.getElementById("question").innerText = q.question;
+
+    const optDiv = document.getElementById("options");
+    optDiv.innerHTML = "";
+
+    q.choices.forEach(opt => {
+        const div = document.createElement("div");
+        div.className = "option";
+        div.innerText = opt;
+
+        div.onclick = () => {
+            if (locked) return;
+
+            document.querySelectorAll(".option")
+                .forEach(o => o.classList.remove("selected"));
+
+            div.classList.add("selected");
+            selectedAnswer = opt;
+            document.getElementById("nextBtn").disabled = false;
+        };
+
+        optDiv.appendChild(div);
+    });
+}
+
+// ---------- NEXT ----------
+function nextQuestion() {
+    if (locked || selectedAnswer === null) return;
+    locked = true;
+
+    const correct = quiz[current].correct;
+    const options = document.querySelectorAll(".option");
+
+    options.forEach(opt => {
+    if (opt.classList.contains("selected")) {
+        opt.classList.remove("selected"); // 🔥 important
+    }
+
+    if (opt.innerText === correct && selectedAnswer === correct) {
+        opt.classList.add("correct");
+    }
+
+    if (opt.innerText === selectedAnswer && selectedAnswer !== correct) {
+        opt.classList.add("wrong");
+    }
+});
+
+
+    if (selectedAnswer === correct) {
+        score++;
+        document.getElementById("score").innerText =
+            `Right ${score} of ${quiz.length}`;
+    }
+
+    setTimeout(() => {
+        current++;
+        if (current < quiz.length) {
+            renderQuestion();
+        } else {
+            document.querySelector(".quiz-box").innerHTML =
+                `<div class="score">
+                    Quiz Finished<br>
+                    Final Score: ${score} / ${quiz.length}
+                </div>`;
+        }
+    }, 1200);
+}
+
+
+// ---------- START ----------
+renderQuestion();
+</script>
